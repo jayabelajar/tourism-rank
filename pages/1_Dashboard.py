@@ -1,15 +1,15 @@
 import plotly.express as px
 import streamlit as st
 
-from src.preprocessing import load_processed_dataset
+from src.custom_dataset import render_dataset_source
 from src.utils import format_rupiah
 
 st.set_page_config(page_title="Dashboard - TourismRank", page_icon="TR", layout="wide")
 
-df = load_processed_dataset()
+df, dataset_name = render_dataset_source("dashboard")
 
 st.title("Dashboard")
-st.caption("Ringkasan dataset destinasi wisata yang digunakan dalam SPK SAW.")
+st.caption(f"Ringkasan dataset aktif: {dataset_name}.")
 
 total_destinations = len(df)
 total_provinces = df["province"].nunique()

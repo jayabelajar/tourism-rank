@@ -1,15 +1,15 @@
 import streamlit as st
 
-from src.preprocessing import load_processed_dataset
+from src.custom_dataset import render_dataset_source
 from src.saw import calculate_ranking
 from src.utils import DEFAULT_WEIGHTS, MONTHS_ID, format_rupiah, option_with_all, validate_weights
 
 st.set_page_config(page_title="Perhitungan SAW - TourismRank", page_icon="TR", layout="wide")
 
-df = load_processed_dataset()
+df, dataset_name = render_dataset_source("calculation")
 
 st.title("Perhitungan SAW")
-st.caption("Masukkan preferensi, lalu sistem menampilkan proses perhitungan dari alternatif sampai ranking.")
+st.caption(f"Dataset aktif: {dataset_name}. Masukkan preferensi untuk melihat proses perhitungan.")
 
 with st.sidebar:
     st.header("Preferensi")
@@ -34,14 +34,17 @@ if not calculate and "saw_result" not in st.session_state:
     st.info("Klik Hitung Ranking untuk memulai proses SAW.")
     st.stop()
 
-if calculate or "saw_result" not in st.session_state:
+params = {
+    "dataset_name": dataset_name,
+    "province": province,
+    "preferred_type": preferred_type,
+    "travel_month": travel_month,
+    "weights": weights,
+}
+
+if calculate or st.session_state.get("saw_params") != params:
     st.session_state["saw_result"] = calculate_ranking(df, preferred_type, travel_month, weights, province)
-    st.session_state["saw_params"] = {
-        "province": province,
-        "preferred_type": preferred_type,
-        "travel_month": travel_month,
-        "weights": weights,
-    }
+    st.session_state["saw_params"] = params
 
 result = st.session_state["saw_result"]
 

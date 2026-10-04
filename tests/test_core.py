@@ -10,6 +10,7 @@ from src.preprocessing import (
     score_time,
 )
 from src.saw import calculate_ranking, normalize_matrix
+from src.custom_dataset import map_uploaded_dataset
 from src.utils import DEFAULT_WEIGHTS
 
 
@@ -24,6 +25,8 @@ class PreprocessingTest(unittest.TestCase):
         self.assertEqual(encode_popularity("tersembunyi"), 1)
         self.assertEqual(encode_popularity("populer"), 3)
         self.assertEqual(encode_popularity("sangat_populer"), 5)
+        self.assertEqual(encode_popularity(4.5), 5)
+        self.assertEqual(encode_popularity("3"), 3)
 
     def test_parse_time_and_scoring(self):
         self.assertIn(7, parse_best_time("Mei - September"))
@@ -41,6 +44,31 @@ class PreprocessingTest(unittest.TestCase):
             columns=["id", "destination", "province", "type", "description", "best_time", "ticket_range", "popularity"],
         )
         self.assertEqual(len(preprocess_dataset(df)), 1)
+
+    def test_uploaded_dataset_mapping(self):
+        df = pd.DataFrame(
+            {
+                "Nama Wisata": ["Pantai A"],
+                "Lokasi": ["Bali"],
+                "Kategori": ["Pantai"],
+                "Harga": [10000],
+                "Rating": [4.5],
+            }
+        )
+        mapped = map_uploaded_dataset(
+            df,
+            {
+                "destination": "Nama Wisata",
+                "province": "Lokasi",
+                "type": "Kategori",
+                "ticket_range": "Harga",
+                "popularity": "Rating",
+            },
+        )
+        processed = preprocess_dataset(mapped)
+        self.assertEqual(processed.iloc[0]["destination"], "Pantai A")
+        self.assertEqual(processed.iloc[0]["ticket_price"], 10000)
+        self.assertEqual(processed.iloc[0]["popularity_score"], 5)
 
 
 class SawTest(unittest.TestCase):

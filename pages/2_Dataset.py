@@ -2,15 +2,15 @@ import math
 
 import streamlit as st
 
-from src.preprocessing import load_processed_dataset
+from src.custom_dataset import render_dataset_source
 from src.utils import format_rupiah, option_with_all
 
 st.set_page_config(page_title="Dataset - TourismRank", page_icon="TR", layout="wide")
 
-df = load_processed_dataset()
+df, dataset_name = render_dataset_source("dataset")
 
 st.title("Dataset")
-st.caption("Data destinasi wisata setelah tahap cleaning, parsing harga, dan encoding popularitas.")
+st.caption(f"Data aktif: {dataset_name}. Data sudah melalui cleaning, parsing harga, dan encoding popularitas.")
 
 col1, col2, col3 = st.columns([2, 1, 1])
 search = col1.text_input("Search", placeholder="Cari nama destinasi atau deskripsi")

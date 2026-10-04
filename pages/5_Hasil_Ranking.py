@@ -1,15 +1,15 @@
 import streamlit as st
 
-from src.preprocessing import load_processed_dataset
+from src.custom_dataset import render_dataset_source
 from src.saw import calculate_ranking
 from src.utils import DEFAULT_WEIGHTS, MONTHS_ID, format_rupiah, option_with_all, validate_weights
 
 st.set_page_config(page_title="Hasil Ranking - TourismRank", page_icon="TR", layout="wide")
 
-df = load_processed_dataset()
+df, dataset_name = render_dataset_source("ranking")
 
 st.title("Hasil Ranking")
-st.caption("Rekomendasi destinasi berdasarkan nilai preferensi SAW terbesar.")
+st.caption(f"Dataset aktif: {dataset_name}. Rekomendasi diurutkan berdasarkan nilai preferensi SAW terbesar.")
 
 with st.sidebar:
     st.header("Preferensi")

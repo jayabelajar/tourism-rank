@@ -42,6 +42,8 @@ def clean_text(value: object) -> str:
 
 
 def parse_ticket_price(value: object) -> float:
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return float(value)
     text = clean_text(value).lower()
     if not text or "gratis" in text or text == "0":
         return 0.0
@@ -54,7 +56,16 @@ def parse_ticket_price(value: object) -> float:
 
 
 def encode_popularity(value: object) -> int:
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        number = float(value)
+        if number >= 4:
+            return 5
+        if number >= 2:
+            return 3
+        return 1
     text = clean_text(value).lower().replace("-", "_")
+    if text.replace(".", "", 1).isdigit():
+        return encode_popularity(float(text))
     if text in POPULARITY_MAP:
         return POPULARITY_MAP[text]
     if any(word in text for word in ["sangat", "very", "high", "tinggi"]):
